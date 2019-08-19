@@ -1,0 +1,140 @@
+### CONFIGURATION FILE FOR NYU DATASET
+
+[GENERAL]
+
+working-dir = /home/ubuntu/core/mosesdecoder/working/experiments2
+
+input-extension = en
+output-extension = hi
+pair-extension = en-hi
+
+
+### directories that contain tools and data
+# 
+# moses
+moses-src-dir = /home/ubuntu/core/mosesdecoder
+#
+# moses binaries
+moses-bin-dir = $moses-src-dir/bin
+#
+# moses scripts
+moses-script-dir = $moses-src-dir/scripts
+#
+# directory where GIZA++/MGIZA programs resides
+external-bin-dir = $moses-src-dir/tools
+
+data = $moses-src-dir/corpus
+
+decoder = $moses-bin-dir/moses
+
+# conversion of rule table into binary on-disk format
+ttable-binarizer = "$moses-bin-dir/CreateOnDiskPt 1 1 4 100 2"
+
+# tokenizers - comment out if all your data is already tokenized
+input-tokenizer = "$moses-script-dir/tokenizer/tokenizer.perl -a -l $input-extension"
+output-tokenizer = "$moses-script-dir/tokenizer/tokenizer.perl -a -l $output-extension"
+
+cores = 4
+
+[CORPUS]
+
+max-sentence-length = 80
+
+[CORPUS:nyu]
+raw-stem = $data/train
+
+[LM]
+
+### tool to be used for language model training
+# kenlm training
+lm-training = "$moses-script-dir/ems/support/lmplz-wrapper.perl -bin $moses-bin-dir/lmplz"
+settings = "--prune '0 0 1' -T $working-dir/lm -S 20% --discount_fallback"
+
+order = 5
+
+lm-binarizer = $moses-bin-dir/build_binary
+type = 8
+
+[LM:nyu]
+
+raw-corpus = $data/train.$output-extension
+
+[INTERPOLATED-LM]
+
+lm-binarizer = $moses-bin-dir/build_binary
+type = 8
+
+
+[TRAINING]
+
+### training script to be used: either a legacy script or 
+# current moses training script (default) 
+# 
+script = $moses-script-dir/training/train-model.perl
+
+parallel = yes
+
+alignment-symmetrization-method = grow-diag-final-and
+
+lexicalized-reordering = msd-bidirectional-fe
+
+max-phrase-length = 5
+
+score-settings = "--GoodTuring --MinScore 2:0.0001"
+
+[TUNING]
+
+tuning-script = $moses-script-dir/training/mert-moses.pl
+tuning-settings = "-mertdir $moses-bin-dir"
+
+raw-input = $data/tune.$input-extension
+
+raw-reference = $data/tune.$output-extension
+nbest = 100
+
+filter-settings = ""
+
+decoder-settings = "-threads $cores"
+
+[TRUECASER]
+
+### script to train truecaser models
+#
+trainer = $moses-script-dir/recaser/train-truecaser.perl
+
+[EVALUATION]
+
+decoder-settings = "-search-algorithm 1 -cube-pruning-pop-limit 5000 -s 5000 -threads $cores"
+
+detokenizer = "$moses-script-dir/tokenizer/detokenizer.perl -l $output-extension"
+#recaser = $moses-script-dir/recaser/recase.perl
+wrapping-script = "$moses-script-dir/ems/support/wrap-xml.perl $output-extension"
+
+multi-bleu = "$moses-script-dir/generic/multi-bleu.perl -lc"
+multi-bleu-c = $moses-script-dir/generic/multi-bleu.perl
+
+analysis = $moses-script-dir/ems/support/analysis.perl
+
+analyze-coverage = yes
+
+report-precision-by-coverage = yes
+
+
+[EVALUATION:test]
+
+### input data
+#
+raw-input = $data/test.$input-extension
+# raw-input = 
+# tokenized-input = 
+# factorized-input =
+# input = 
+
+### reference data
+#
+raw-reference = $data/test.$output-extension
+
+precision-by-coverage-base = $working-dir/evaluation/test.analysis.1
+
+[REPORTING]
+
