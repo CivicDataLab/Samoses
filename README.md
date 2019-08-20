@@ -10,6 +10,9 @@ Clone the Moses repository [here](https://github.com/moses-smt/mosesdecoder.git)
 
 Follow the instructions [here](http://www.statmt.org/moses/?n=Development.GetStarted) to install Moses
 
+## DATASET
+
+Find the nyu corpus for English-Hindi [here](https://drive.google.com/drive/u/2/folders/16Yjgq_osF2j-Ws0vWBp2i59kA094nFWP)
 
 ## Pipeline Creation Language (PCL)
 
