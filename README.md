@@ -1,5 +1,7 @@
 # Samoses
-Python wrapper for Moses
+[![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://github.com/CivicDataLab/Samoses/blob/master/LICENSE)
+
+Wrapper for Moses
 
 
 ## Setup
